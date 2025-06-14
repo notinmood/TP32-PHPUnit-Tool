@@ -1,36 +1,22 @@
 # 说明
 
-帮助ThinkPHP3.2项目实施phpunit单元测试.
+- 帮助ThinkPHP3.2项目实施phpunit单元测试。
+- 本项目复刻于 [snowair/think-phpunit](https://github.com/snowair/think-phpunit), 做了部分修改。
 
-# 使用
+# 安装和配置
 
-使用think-phpunit的最重要的前提是你本身懂得什么是单元测试. 如果你还对单元测试一知半解，请先认真学习phpunit.
+在项目根目录下, 打开`composer.json`，添加以下内容:
 
-此外, think-phpunit 是一个composer包, 需要首先安装composer.
-
-记住: 先学会走路, 再学跑步.
-
-[phpunit中文文档](https://phpunit.de/manual/current/zh_cn/index.html)
-
-[composer中文文档](http://www.kancloud.cn/thinkphp/composer)
-
-PHPUnit 及 Composer的使用本文不做介绍.
-
-### 创建composer.json 并安装依赖
-
-```
+``` json
 {
-  "name": "公司名/项目名",
   "autoload": {
     "classmap": ["Application","ThinkPHP/Library"]
   },
   "require-dev": {
-    "snowair/think-phpunit": "dev-master"
+    "wanren/tp32-phpunit-tool": "dev-master"
   }
 }
 ```
-
-**关键在于：autoload和require-dev**, 你必须让composer能在测试时找到你的类. 所有需要在autoload中进行注册
 
 首次安装:
 
@@ -49,6 +35,8 @@ $ composer update
 ```
 $ composer dump-autoload
 ```
+
+# 使用
 
 安装好以后, 你就可以为项目中任何一个类创建单元测试类了:
 
@@ -135,7 +123,7 @@ class UserModelTest extends \PHPUnit_Framework_TestCase
 
 ## 关于 header 函数
 
-由于 phpunit 在启动后就已经产生了自己的输出, 所以被测的方法中不能直接使用 `header()` 函数, 否则会抛出错误. 
+由于 phpunit 在启动后就已经产生了自己的输出, 所以被测的方法中不能直接使用 `header()` 函数, 否则会抛出错误.
 
 所以代码中使用了header函数的地方需要调整,有以下两种方式调整:
 
@@ -146,11 +134,11 @@ headers_sent() or header(''); // 推荐: 发送前判断是否已经产生过输
 
 ## 关于exit
 
-由于exit 会中断一切执行, 所以 phpunit 无法测试使用了exit语句的方法 . 
- 
+由于exit 会中断一切执行, 所以 phpunit 无法测试使用了exit语句的方法 .
+
 如果你的方法中直接或间接用到了exit, 最佳的办法就是重构去除exit, 让程序能正常终结, 而不要强制终结.
 
-# 执行测试 
+# 执行测试
 
 假设你创建了一个测试类 `./test/IndexControllerTest.php`,
 
@@ -176,8 +164,10 @@ PHPStrom是一个强大的IDE, 可以很方便地执行测试. 我简单介绍�
 1. 打开`File->Settings...` 对话框
 2. 进入`Languages & Frameworks -> PHP`对话框, 设置`Interpreter`
 2. 进入`Languages & Frameworks -> PHP -> PHPUnit`对话框.
-3. 因为我们一般都是本地执行测试, 因此只需要设置 Local. 设置 "PHPUnit Library" 项, 勾选选择"Use Custom autoloader", 然后在"Path to script:" 定位到项目的自动加载文件`vendor/autoload.php`.
+3. 因为我们一般都是本地执行测试, 因此只需要设置 Local. 设置 "PHPUnit Library" 项, 勾选选择"Use Custom autoloader",
+   然后在"Path to script:" 定位到项目的自动加载文件`vendor/autoload.php`.
 
 这样,就基本设置就完成了.
 
-接下来,  然后在PHPStorm的文件名或这个文件的编辑区域上右键单击, 选择**Run IndexControllerTest**. 测试就会执行, 并打开Run bar显示执行过程和结果.
+接下来, 然后在PHPStorm的文件名或这个文件的编辑区域上右键单击, 选择**Run IndexControllerTest**. 测试就会执行, 并打开Run
+bar显示执行过程和结果.

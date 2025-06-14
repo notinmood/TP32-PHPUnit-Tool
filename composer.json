@@ -1,15 +1,19 @@
 {
-  "name": "snowair/think-phpunit",
-  "description": "ThinkPHP3.2单元测试辅助类",
+  "name": "wanren/tp32-phpunit-tool",
+  "description": "ThinkPHP3.2单元测试辅助工具",
   "authors": [
     {
       "name": "zhuyajie",
       "email": "xcoolcc@gmail.com"
+    },
+    {
+      "name": "xiedali",
+      "email": "9727005@qq.com"
     }
   ],
   "autoload": {
     "files":[
-      "PhpunitHelper.php",
+      "PhpUnitHelper.php",
       "Response.php",
       "include.php"
     ]

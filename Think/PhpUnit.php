@@ -11,7 +11,7 @@ use Snowair\Think\Phpunit\Response;
 trait PhpUnit
 {
 
-    /** @var  PhpunitHelper */
+    /** @var  PhpUnitHelper */
     protected static $app;
     /** @var  Controller */
     protected static $controller;

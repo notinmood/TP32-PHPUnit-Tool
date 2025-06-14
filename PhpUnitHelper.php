@@ -8,7 +8,7 @@
  */
 namespace Think;
 
-class PhpunitHelper {
+class PhpUnitHelper {
 
     protected static $_map=[];
     /**
@@ -302,8 +302,8 @@ class PhpunitHelper {
      */
     public function start()
     {
-        spl_autoload_register('\\Think\\PhpunitHelper::autoload');
-        register_shutdown_function('\\Think\\PhpunitHelper::fatalError');
+        spl_autoload_register('\\Think\\PhpUnitHelper::autoload');
+        register_shutdown_function('\\Think\\PhpUnitHelper::fatalError');
         Storage::connect(STORAGE_TYPE);
 
         $mode = include is_file(CONF_PATH . 'core.php') ? CONF_PATH . 'core.php' : MODE_PATH . APP_MODE . '.php';
