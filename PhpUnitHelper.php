@@ -6,16 +6,18 @@
  * Date: 2015/7/2
  * Time: 16:56
  */
+
 namespace Think;
 
-class PhpUnitHelper {
+class PhpUnitHelper
+{
 
-    protected static $_map=[];
+    protected static $_map = [];
     /**
      * @var  \Think\Model
      */
     protected $model;
-    protected $testConfig=[];
+    protected $testConfig = [];
     protected $action_name;
 
     /**
@@ -23,50 +25,50 @@ class PhpUnitHelper {
      * @param string $think_path
      * @param string $runtime_path 不要与正式的runtime目录相同
      */
-    public function __construct($app_path=null, $think_path=null, $runtime_path=null)
+    public function __construct($app_path = null, $think_path = null, $runtime_path = null)
     {
         $const = $this->guessPath();
-        if ($app_path===null) {
+        if ($app_path === null) {
             $app_path = $const['APP_PATH'];
         }
-        if ($think_path===null) {
+        if ($think_path === null) {
             $think_path = $const['THINK_PATH'];
         }
         if ($runtime_path === null) {
-            $runtime_path = $const['ROOT_PATH'].'/Runtime-test';
+            $runtime_path = $const['ROOT_PATH'] . '/Runtime-test';
         }
 
         if (!file_exists($app_path)) {
-            throw new \RuntimeException($app_path.'不存在');
+            throw new \RuntimeException($app_path . '不存在');
         }
 
         if (!file_exists($think_path)) {
-            throw new \RuntimeException($think_path.'不存在');
+            throw new \RuntimeException($think_path . '不存在');
         }
 
-        if (!file_exists( $runtime_path )) {
+        if (!file_exists($runtime_path)) {
             $bool = mkdir($runtime_path);
             if (!$bool) {
-                throw new \RuntimeException($runtime_path.'创建失败');
+                throw new \RuntimeException($runtime_path . '创建失败');
             }
         } else if (!is_writable($runtime_path)) {
-            throw new \RuntimeException($runtime_path.'不可写');
+            throw new \RuntimeException($runtime_path . '不可写');
         }
 
         /**
          * 单元测试,会出现变量重复定义错误,使用defined来判断
          */
-        defined('APP_DEBUG')    or define('APP_DEBUG', true);
-        defined('APP_PATH')     or define('APP_PATH', rtrim($app_path, '\\/') . '/');
+        defined('APP_DEBUG') or define('APP_DEBUG', true);
+        defined('APP_PATH') or define('APP_PATH', rtrim($app_path, '\\/') . '/');
         defined('RUNTIME_PATH') or define('RUNTIME_PATH', rtrim($runtime_path, '\\/') . '/');
-        defined('THINK_PATH')   or define('THINK_PATH', rtrim($think_path, '\\/') . '/');
+        defined('THINK_PATH') or define('THINK_PATH', rtrim($think_path, '\\/') . '/');
 
-        $_SERVER['REQUEST_METHOD'] = 'GET';
-        $_SERVER['REMOTE_ADDR']='127.0.0.1';
-        $_SERVER['REMOTE_PORT']='32800';
-        $_SERVER['SERVER_ADDR']='127.0.0.1';
+        $_SERVER['REQUEST_METHOD']  = 'GET';
+        $_SERVER['REMOTE_ADDR']     = '127.0.0.1';
+        $_SERVER['REMOTE_PORT']     = '32800';
+        $_SERVER['SERVER_ADDR']     = '127.0.0.1';
         $_SERVER['SERVER_PROTOCOL'] = 'HTTP/1.1';
-        $_SERVER['HTTP_REFERER']='/';
+        $_SERVER['HTTP_REFERER']    = '/';
 
         $this->_defineConsts();
     }
@@ -76,35 +78,35 @@ class PhpUnitHelper {
         defined('DS') || define('DS', DIRECTORY_SEPARATOR);
         $vendorPath   = dirname(dirname(__DIR__));
         $vendorParent = realpath(dirname($vendorPath));
-        $rootPath = $this->getProjectRoot($vendorParent);
-        $const = array();
+        $rootPath     = $this->getProjectRoot($vendorParent);
+        $const        = array();
         if ($rootPath) {
-            $dir = dir($rootPath);
+            $dir   = dir($rootPath);
             $index = $basepath = false;
             while ($d = $dir->read()) {
-                if($d=='index.php'){
+                if ($d == 'index.php') {
                     $basepath = $rootPath;
-                    $index = $rootPath.DS.'index.php';
+                    $index    = $rootPath . DS . 'index.php';
                     break;
                 }
                 if (file_exists($rootPath . DS . $d . DS . 'index.php')) {
                     $basepath = $rootPath . DS . $d;
-                    $index = $rootPath.DS.$d.DS.'index.php';
+                    $index    = $rootPath . DS . $d . DS . 'index.php';
                     break;
                 }
             }
             if ($index && $basepath) {
                 $content = file_get_contents($index);
-                if (preg_match_all('/define.*[\'"](\w+)[\'"].*((?<=[\'"]).+(?=[\'"])|true|false)/im',$content,$matches,PREG_SET_ORDER)) {
+                if (preg_match_all('/define.*[\'"](\w+)[\'"].*((?<=[\'"]).+(?=[\'"])|true|false)/im', $content, $matches, PREG_SET_ORDER)) {
                     foreach ($matches as $value) {
-                        $const[$value[1]]=$value[2];
+                        $const[$value[1]] = $value[2];
                     }
                     if (preg_match('{.*[\'"](.*ThinkPHP.php)[\'"]}', $content, $matches)) {
-                        $think_path = dirname(realpath($basepath.DS.$matches[1]));
+                        $think_path          = dirname(realpath($basepath . DS . $matches[1]));
                         $const['THINK_PATH'] = $think_path;
                     }
                     if (!file_exists($const['APP_PATH'])) {
-                        $const['APP_PATH'] = realpath($rootPath.DIRECTORY_SEPARATOR.$const['APP_PATH']) ;
+                        $const['APP_PATH'] = realpath($rootPath . DIRECTORY_SEPARATOR . $const['APP_PATH']);
                     }
                 }
             }
@@ -185,7 +187,7 @@ class PhpUnitHelper {
      */
     public function setGET($get)
     {
-        $_GET = array_merge($_GET, $get);
+        $_GET     = array_merge($_GET, $get);
         $_REQUEST = array_merge($_REQUEST, $_GET);
     }
 
@@ -195,7 +197,7 @@ class PhpUnitHelper {
      */
     public function setPOST($post)
     {
-        $_POST = array_merge($_POST, $post);
+        $_POST    = array_merge($_POST, $post);
         $_REQUEST = array_merge($_REQUEST, $_POST);
     }
 
@@ -221,77 +223,77 @@ class PhpUnitHelper {
 
         $GLOBALS['_beginTime'] = microtime(TRUE);
         // 记录内存初始使用
-        defined('MEMORY_LIMIT_ON')  or define('MEMORY_LIMIT_ON', function_exists('memory_get_usage'));
+        defined('MEMORY_LIMIT_ON') or define('MEMORY_LIMIT_ON', function_exists('memory_get_usage'));
         if (MEMORY_LIMIT_ON) $GLOBALS['_startUseMems'] = memory_get_usage();
 
-        defined('THINK_VERSION')    or define('THINK_VERSION', '3.2.3');
+        defined('THINK_VERSION') or define('THINK_VERSION', '3.2.3');
 
-        if(function_exists('saeAutoLoader')){// 自动识别SAE环境
-            defined('APP_MODE')     or define('APP_MODE', 'sae');
-            defined('STORAGE_TYPE') or define('STORAGE_TYPE',  'Sae');
-        }else{
-            defined('APP_MODE')     or define('APP_MODE',       'common'); // 应用模式 默认为普通模式
-            defined('STORAGE_TYPE') or define('STORAGE_TYPE',   'File'); // 存储类型 默认为File
+        if (function_exists('saeAutoLoader')) {// 自动识别SAE环境
+            defined('APP_MODE') or define('APP_MODE', 'sae');
+            defined('STORAGE_TYPE') or define('STORAGE_TYPE', 'Sae');
+        } else {
+            defined('APP_MODE') or define('APP_MODE', 'common');       // 应用模式 默认为普通模式
+            defined('STORAGE_TYPE') or define('STORAGE_TYPE', 'File'); // 存储类型 默认为File
         }
 
         // URL 模式定义
-        defined('URL_COMMON')       or define('URL_COMMON', 0);  //普通模式
-        defined('URL_PATHINFO')     or define('URL_PATHINFO', 1);  //PATHINFO模式
-        defined('URL_REWRITE')      or define('URL_REWRITE', 2);  //REWRITE模式
-        defined('URL_COMPAT')       or define('URL_COMPAT', 3);  // 兼容模式
+        defined('URL_COMMON') or define('URL_COMMON', 0);      //普通模式
+        defined('URL_PATHINFO') or define('URL_PATHINFO', 1);  //PATHINFO模式
+        defined('URL_REWRITE') or define('URL_REWRITE', 2);    //REWRITE模式
+        defined('URL_COMPAT') or define('URL_COMPAT', 3);      // 兼容模式
 
-        defined('EXT')              or define('EXT', '.class.php');
+        defined('EXT') or define('EXT', '.class.php');
 
         // 系统常量定义
-        defined('APP_PATH')         or define('APP_PATH', dirname($_SERVER['SCRIPT_FILENAME']) . '/');
-        defined('APP_STATUS')       or define('APP_STATUS', ''); // 应用状态 加载对应的配置文件
-        defined('APP_DEBUG')        or define('APP_DEBUG', true); // 是否调试模式
+        defined('APP_PATH') or define('APP_PATH', dirname($_SERVER['SCRIPT_FILENAME']) . '/');
+        defined('APP_STATUS') or define('APP_STATUS', ''); // 应用状态 加载对应的配置文件
+        defined('APP_DEBUG') or define('APP_DEBUG', true); // 是否调试模式
 
-        defined('RUNTIME_PATH')     or define('RUNTIME_PATH', APP_PATH . 'Runtime/');   // 系统运行时目录
-        defined('LIB_PATH')         or define('LIB_PATH',       realpath(THINK_PATH.'Library').'/'); // 系统核心类库目录
-        defined('CORE_PATH')        or define('CORE_PATH',      LIB_PATH.'Think/'); // Think类库目录
-        defined('BEHAVIOR_PATH')    or define('BEHAVIOR_PATH',  LIB_PATH.'Behavior/'); // 行为类库目录
-        defined('MODE_PATH')        or define('MODE_PATH',      THINK_PATH.'Mode/'); // 系统应用模式目录
-        defined('VENDOR_PATH')      or define('VENDOR_PATH',    LIB_PATH.'Vendor/'); // 第三方类库目录
-        defined('COMMON_PATH')      or define('COMMON_PATH',    APP_PATH.'Common/'); // 应用公共目录
-        defined('CONF_PATH')        or define('CONF_PATH',      COMMON_PATH.'Conf/'); // 应用配置目录
-        defined('LANG_PATH')        or define('LANG_PATH', COMMON_PATH . 'Lang/'); // 应用语言目录
-        defined('HTML_PATH')        or define('HTML_PATH',      APP_PATH.'Html/'); // 应用静态目录
-        defined('LOG_PATH')         or define('LOG_PATH',       RUNTIME_PATH.'Logs/'); // 应用日志目录
-        defined('TEMP_PATH')        or define('TEMP_PATH',      RUNTIME_PATH.'Temp/'); // 应用缓存目录
-        defined('DATA_PATH')        or define('DATA_PATH',      RUNTIME_PATH.'Data/'); // 应用数据目录
-        defined('CACHE_PATH')       or define('CACHE_PATH',     RUNTIME_PATH.'Cache/'); // 应用模板缓存目录
-        defined('CONF_EXT')         or define('CONF_EXT',       '.php'); // 配置文件后缀
-        defined('CONF_PARSE')       or define('CONF_PARSE', '');    // 配置文件解析方法
-        defined('ADDON_PATH')       or define('ADDON_PATH',     APP_PATH.'Addon');
+        defined('RUNTIME_PATH') or define('RUNTIME_PATH', APP_PATH . 'Runtime/');          // 系统运行时目录
+        defined('LIB_PATH') or define('LIB_PATH', realpath(THINK_PATH . 'Library') . '/'); // 系统核心类库目录
+        defined('CORE_PATH') or define('CORE_PATH', LIB_PATH . 'Think/');                  // Think类库目录
+        defined('BEHAVIOR_PATH') or define('BEHAVIOR_PATH', LIB_PATH . 'Behavior/');       // 行为类库目录
+        defined('MODE_PATH') or define('MODE_PATH', THINK_PATH . 'Mode/');                 // 系统应用模式目录
+        defined('VENDOR_PATH') or define('VENDOR_PATH', LIB_PATH . 'Vendor/');             // 第三方类库目录
+        defined('COMMON_PATH') or define('COMMON_PATH', APP_PATH . 'Common/');             // 应用公共目录
+        defined('CONF_PATH') or define('CONF_PATH', COMMON_PATH . 'Conf/');                // 应用配置目录
+        defined('LANG_PATH') or define('LANG_PATH', COMMON_PATH . 'Lang/');                // 应用语言目录
+        defined('HTML_PATH') or define('HTML_PATH', APP_PATH . 'Html/');                   // 应用静态目录
+        defined('LOG_PATH') or define('LOG_PATH', RUNTIME_PATH . 'Logs/');                 // 应用日志目录
+        defined('TEMP_PATH') or define('TEMP_PATH', RUNTIME_PATH . 'Temp/');               // 应用缓存目录
+        defined('DATA_PATH') or define('DATA_PATH', RUNTIME_PATH . 'Data/');               // 应用数据目录
+        defined('CACHE_PATH') or define('CACHE_PATH', RUNTIME_PATH . 'Cache/');            // 应用模板缓存目录
+        defined('CONF_EXT') or define('CONF_EXT', '.php');                                 // 配置文件后缀
+        defined('CONF_PARSE') or define('CONF_PARSE', '');                                 // 配置文件解析方法
+        defined('ADDON_PATH') or define('ADDON_PATH', APP_PATH . 'Addon');
 
         // 系统信息
-        if(version_compare(PHP_VERSION,'5.4.0','<')) {
-            ini_set('magic_quotes_runtime',0);
+        if (version_compare(PHP_VERSION, '5.4.0', '<')) {
+            ini_set('magic_quotes_runtime', 0);
             defined('MAGIC_QUOTES_GPC') or define('MAGIC_QUOTES_GPC', get_magic_quotes_gpc() ? True : False);
-        }else{
+        } else {
             defined('MAGIC_QUOTES_GPC') or define('MAGIC_QUOTES_GPC', false);
         }
 
-        defined('IS_CGI')   or define('IS_CGI',0);
-        defined('IS_WIN')   or define('IS_WIN',strstr(PHP_OS, 'WIN') ? 1 : 0 );
-        defined('IS_CLI')   or define('IS_CLI',0);
+        defined('IS_CGI') or define('IS_CGI', 0);
+        defined('IS_WIN') or define('IS_WIN', strstr(PHP_OS, 'WIN') ? 1 : 0);
+        defined('IS_CLI') or define('IS_CLI', 0);
 
-        if(!IS_CLI) {
+        if (!IS_CLI) {
             // 当前文件名
-            if(!defined('_PHP_FILE_')) {
-                if(IS_CGI) {
+            if (!defined('_PHP_FILE_')) {
+                if (IS_CGI) {
                     //CGI/FASTCGI模式下
-                    $_temp  = explode('.php',$_SERVER['PHP_SELF']);
-                    define('_PHP_FILE_', rtrim(str_replace($_SERVER['HTTP_HOST'],'',$_temp[0].'.php'),'/'));
-                }else {
+                    $_temp = explode('.php', $_SERVER['PHP_SELF']);
+                    define('_PHP_FILE_', rtrim(str_replace($_SERVER['HTTP_HOST'], '', $_temp[0] . '.php'), '/'));
+                } else {
                     define('_PHP_FILE_', rtrim($_SERVER['SCRIPT_NAME'], '/'));
                 }
             }
 
-            if(!defined('__ROOT__')) {
+            if (!defined('__ROOT__')) {
                 $_root = rtrim(dirname(_PHP_FILE_), '/');
-                define('__ROOT__',  (($_root=='/' || $_root=='\\')?'':$_root));
+                define('__ROOT__', (($_root == '/' || $_root == '\\') ? '' : $_root));
             }
         }
 
@@ -309,9 +311,9 @@ class PhpUnitHelper {
         $mode = include is_file(CONF_PATH . 'core.php') ? CONF_PATH . 'core.php' : MODE_PATH . APP_MODE . '.php';
         // 加载核心文件
         foreach ($mode['core'] as $file) {
-            if(is_file($file)) {
+            if (is_file($file)) {
                 if (strpos($file, 'Think/Controller.class.php') !== false
-                    ||strpos( $file, 'Think\\Controller.class.php' )!==false
+                    || strpos($file, 'Think\\Controller.class.php') !== false
                     || strpos($file, 'Think/View.class.php') !== false
                     || strpos($file, 'Think\\View.class.php') !== false
                 ) {
@@ -332,36 +334,36 @@ class PhpUnitHelper {
         }
 
         // 加载模式别名定义
-        if(isset($mode['alias'])){
-            self::addMap(is_array($mode['alias'])?$mode['alias']:include $mode['alias']);
+        if (isset($mode['alias'])) {
+            self::addMap(is_array($mode['alias']) ? $mode['alias'] : include $mode['alias']);
         }
 
         // 加载应用别名定义文件
-        if(is_file(CONF_PATH.'alias.php')){
-            self::addMap(include CONF_PATH.'alias.php');
+        if (is_file(CONF_PATH . 'alias.php')) {
+            self::addMap(include CONF_PATH . 'alias.php');
         }
 
         // 加载模式行为定义
-        if(isset($mode['tags'])) {
+        if (isset($mode['tags'])) {
             \Think\Hook::import(is_array($mode['tags']) ? $mode['tags'] : include $mode['tags']);
         }
 
         // 加载应用行为定义
         if (is_file(CONF_PATH . 'tags.php')) {
             // 允许应用增加开发模式配置定义
-            \Think\Hook::import(include CONF_PATH.'tags.php');
+            \Think\Hook::import(include CONF_PATH . 'tags.php');
         }
 
         // 加载框架底层语言包
-        L(include THINK_PATH.'Lang/'.strtolower(C('DEFAULT_LANG')).'.php');
+        L(include THINK_PATH . 'Lang/' . strtolower(C('DEFAULT_LANG')) . '.php');
         // 调试模式加载系统默认的配置文件
-        C(include THINK_PATH.'Conf/debug.php');
+        C(include THINK_PATH . 'Conf/debug.php');
         // 读取应用调试配置文件
         if (is_file(CONF_PATH . 'debug' . CONF_EXT)) {
             C(include CONF_PATH . 'debug' . CONF_EXT);
         }
-        C('HTML_CACHE_ON',false);
-        C('LIMIT_ROBOT_VISIT',false) ;
+        C('HTML_CACHE_ON', false);
+        C('LIMIT_ROBOT_VISIT', false);
         C('LIMIT_PROXY_VISIT', false);
         $this->run();
     }
@@ -376,31 +378,36 @@ class PhpUnitHelper {
         $db_name = C('DB_NAME'); // 应用使用的数据库名
         $db_host = C('DB_HOST'); // 应用使用的数据库名
 
-        C('SHOW_PAGE_TRACE',false);
+        C('SHOW_PAGE_TRACE', false);
 
         // 加载项目中定义的单元测试配置文件
-        if (is_file(CONF_PATH.'test'.CONF_EXT)) {
-            C(load_config(CONF_PATH.'test'.CONF_EXT));
+        if (is_file(CONF_PATH . 'test' . CONF_EXT)) {
+            C(load_config(CONF_PATH . 'test' . CONF_EXT));
         }
         // 加载.test.env文件定义的单元测试配置
         if (class_exists('\\Snowair\\Dotenv\\Loader')) {
             $this->loadEnvConfig();
-
         }
 
         // 加载测试执行前setTestConfig方法临时设置的配置
         C($this->testConfig);
         $test_db_name = C('DB_NAME'); // 测试数据库的数据库名
         $test_db_host = C('DB_HOST'); // 应用使用的数据库名
-        if (
-            ($db_name && $db_name == $test_db_name)
-           && ($db_host && $db_host==$test_db_host)
-        ) {
-            throw new \Exception('请单独为测试环境设置数据库连接配置');
+
+        //// 强制要求测试数据库和正式数据库不一致
+        //if (($db_name && $db_name === $test_db_name) && ($db_host && $db_host === $test_db_host)) {
+        //    throw new \Exception('请单独为测试环境设置数据库连接配置');
+        //}
+
+        if (empty($test_db_host)) {
+            $test_db_host = $db_host;
         }
 
+        if (empty($test_db_name)) {
+            $test_db_name = $db_name;
+        }
 
-        if ($test_db_name && $test_db_name && C('DB_TYPE') && C('DB_USER')) {
+        if ($test_db_host && $test_db_name && C('DB_TYPE') && C('DB_USER')) {
             $this->model = new \Think\Model();
         }
 
@@ -410,19 +417,18 @@ class PhpUnitHelper {
 
     protected function init()
     {
-
         load_ext_file(COMMON_PATH);
 
         // 日志目录转换为绝对路径 默认情况下存储到公共模块下面
-        C('LOG_PATH',   realpath(LOG_PATH).'/Common/');
+        C('LOG_PATH', realpath(LOG_PATH) . '/Common/');
 
         // 定义当前请求的系统常量
-        defined('NOW_TIME')         or define('NOW_TIME', $_SERVER['REQUEST_TIME']);
-        defined('REQUEST_METHOD')   or define('REQUEST_METHOD', $_SERVER['REQUEST_METHOD']);
-        defined('IS_GET')           || define('IS_GET', REQUEST_METHOD == 'GET' ? true : false);
-        defined('IS_POST')          || define('IS_POST', REQUEST_METHOD == 'POST' ? true : false);
-        defined('IS_PUT')           || define('IS_PUT', REQUEST_METHOD == 'PUT' ? true : false);
-        defined('IS_DELETE')        || define('IS_DELETE', REQUEST_METHOD == 'DELETE' ? true : false);
+        defined('NOW_TIME') or define('NOW_TIME', $_SERVER['REQUEST_TIME']);
+        defined('REQUEST_METHOD') or define('REQUEST_METHOD', $_SERVER['REQUEST_METHOD']);
+        defined('IS_GET') || define('IS_GET', REQUEST_METHOD == 'GET' ? true : false);
+        defined('IS_POST') || define('IS_POST', REQUEST_METHOD == 'POST' ? true : false);
+        defined('IS_PUT') || define('IS_PUT', REQUEST_METHOD == 'PUT' ? true : false);
+        defined('IS_DELETE') || define('IS_DELETE', REQUEST_METHOD == 'DELETE' ? true : false);
 
         // URL调度
         $this->dispatch();
@@ -441,13 +447,12 @@ class PhpUnitHelper {
         C('TMPL_EXCEPTION_FILE', realpath(C('TMPL_EXCEPTION_FILE')));
         defined('IS_AJAX') or define(
             'IS_AJAX',
-        ((isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest')
-            || !empty($_POST[C('VAR_AJAX_SUBMIT')])
-            || !empty($_GET[C('VAR_AJAX_SUBMIT')])
-            ) ? true : false
+            ((isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest')
+                || !empty($_POST[C('VAR_AJAX_SUBMIT')])
+                || !empty($_GET[C('VAR_AJAX_SUBMIT')]))
         );
-        C('phpunit',true);
-        return ;
+        C('phpunit', true);
+        return;
     }
 
     /**
@@ -469,7 +474,9 @@ class PhpUnitHelper {
         // 定义当前模块的模版缓存路径
         C('CACHE_PATH', CACHE_PATH . MODULE_NAME . '/');
         if (!file_exists(LOG_PATH)) {
-            mkdir(LOG_PATH, 0755);
+            if (!mkdir($concurrentDirectory = LOG_PATH, 0755) && !is_dir($concurrentDirectory)) {
+                throw new \RuntimeException(sprintf('Directory "%s" was not created', $concurrentDirectory));
+            }
         }
         C('LOG_PATH', realpath(LOG_PATH) . '/' . MODULE_NAME . '/');
 
@@ -481,7 +488,7 @@ class PhpUnitHelper {
             C(include MODULE_PATH . 'Conf/config.php');
         }
         // 加载模块别名定义
-        if(is_file(MODULE_PATH.'Conf/alias.php')){
+        if (is_file(MODULE_PATH . 'Conf/alias.php')) {
             $map = include MODULE_PATH . 'Conf/alias.php';
             foreach ($map as $class => $file) {
                 include $file;
@@ -497,8 +504,8 @@ class PhpUnitHelper {
         $depr = C('URL_PATHINFO_DEPR');
         defined('MODULE_PATHINFO_DEPR') or define('MODULE_PATHINFO_DEPR', $depr);
 
-        if(!defined('__APP__')){
-            $urlMode        =   C('URL_MODEL');
+        if (!defined('__APP__')) {
+            $urlMode = C('URL_MODEL');
             if ($urlMode == URL_COMPAT) {// 兼容模式判断
                 $varPath = C('VAR_PATHINFO');
                 defined('PHP_FILE') || define('PHP_FILE', _PHP_FILE_ . '?' . $varPath . '=');
@@ -514,12 +521,12 @@ class PhpUnitHelper {
             defined('__APP__') || define('__APP__', strip_tags(PHP_FILE));
         }
 
-        $moduleName = MODULE_NAME;
+        $moduleName     = MODULE_NAME;
         $controllerName = CONTROLLER_NAME;
-        defined('__MODULE__')       or define('__MODULE__', (defined('BIND_MODULE') || !C('MULTI_MODULE')) ? __APP__ : __APP__ . '/' . ($urlCase ? strtolower($moduleName) : $moduleName));
-        defined('__CONTROLLER__')   or define('__CONTROLLER__', __MODULE__ . $depr . (defined('BIND_CONTROLLER') ? '' : ($urlCase ? parse_name($controllerName) : $controllerName)));
-        defined('__ACTION__')       || define('__ACTION__', __CONTROLLER__ . $depr . $this->action_name);
-        defined('__SELF__')         || define('__SELF__', strip_tags(isset($_SERVER[C('URL_REQUEST_URI')]) ? $_SERVER[C('URL_REQUEST_URI')] : ''));
+        defined('__MODULE__') or define('__MODULE__', (defined('BIND_MODULE') || !C('MULTI_MODULE')) ? __APP__ : __APP__ . '/' . ($urlCase ? strtolower($moduleName) : $moduleName));
+        defined('__CONTROLLER__') or define('__CONTROLLER__', __MODULE__ . $depr . (defined('BIND_CONTROLLER') ? '' : ($urlCase ? parse_name($controllerName) : $controllerName)));
+        defined('__ACTION__') || define('__ACTION__', __CONTROLLER__ . $depr . $this->action_name);
+        defined('__SELF__') || define('__SELF__', strip_tags(isset($_SERVER[C('URL_REQUEST_URI')]) ? $_SERVER[C('URL_REQUEST_URI')] : ''));
     }
 
     /**
@@ -578,7 +585,7 @@ class PhpUnitHelper {
      */
     protected function loadEnvConfig()
     {
-        $path = dirname(APP_PATH);
+        $path     = dirname(APP_PATH);
         $env_file = $path . '/.test.env';
         if (file_exists($env_file)) {
             $Loader = new \Snowair\Dotenv\Loader($env_file);
@@ -591,7 +598,7 @@ class PhpUnitHelper {
             if (C('DOTENV.toConst')) {
                 $Loader->define();
             }
-            if(C('DOTENV.toServer')){
+            if (C('DOTENV.toServer')) {
                 $Loader->toServer(true);
             }
             if (C('DOTENV.toEnv')) {
@@ -602,15 +609,15 @@ class PhpUnitHelper {
         };
     }
 
-    function getProjectRoot($vendorParent){
+    function getProjectRoot($vendorParent)
+    {
         $dir = dirname($vendorParent);
         if (file_exists($vendorParent . DS . 'composer.json')
-            || file_exists( $vendorParent.DS.'.git')
+            || file_exists($vendorParent . DS . '.git')
             || file_exists($vendorParent . DS . '.svn')
-            || file_exists( $vendorParent.DS.'.hg')
+            || file_exists($vendorParent . DS . '.hg')
             || file_exists($vendorParent . DS . 'index.php')
-        )
-        {
+        ) {
             return $vendorParent;
         } elseif ($dir != $vendorParent && $dir != '.') {
             return $this->getProjectRoot($dir);

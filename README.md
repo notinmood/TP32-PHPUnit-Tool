@@ -2,6 +2,7 @@
 
 - 帮助ThinkPHP3.2项目实施phpunit单元测试。
 - 本项目复刻于 [snowair/think-phpunit](https://github.com/snowair/think-phpunit), 做了部分修改。
+- 本项目提交到GitHub之后，会自动同步更新到packagist.org。
 
 # 安装和配置
 
@@ -44,7 +45,7 @@ $ composer dump-autoload
 
 think-phpunit的单元测试类遵循以下规则:
 
-1. 所有的测试类都要在 `setupBeforeClass` 静态方法中创建出模拟app实例.
+1. 所有的测试类都要在 `setUpBeforeClass` 静态方法中创建出模拟app实例.
 
 2. 如果测试的是控制器类，那么测试类要 `use \Think\Phpunit;`. 测试其他类不需要这条
 
@@ -64,7 +65,7 @@ class IndexControllerTest extends \PHPUnit_Framework_TestCase
 {
     use \Think\PhpUnit; // 只有控制器测试类才需要它
 
-    static public function setupBeforeClass()
+    static public function setUpBeforeClass()
     {
         // 下面四行代码模拟出一个应用实例, 每一行都很关键, 需正确设置参数
         self::$app = new \Think\PhpunitHelper();
@@ -91,7 +92,7 @@ namespace Home\Model;
 class UserModelTest extends \PHPUnit_Framework_TestCase
 {
 
-    static public function setupBeforeClass()
+    static public function setUpBeforeClass()
     {
         // 下面四行代码模拟出一个应用实例, 每一行都很关键, 需正确设置参数
         self::$app = new \Think\PhpunitHelper();
@@ -159,15 +160,5 @@ vendor/bin/phpunit  path-to-your-test-class-file
 
 ## PHPStorm中执行测试
 
-PHPStrom是一个强大的IDE, 可以很方便地执行测试. 我简单介绍一下如何在PHPStorm中配置phpunit.
+新版的PHPStorm是一个强大的IDE, 可以很方便地自动发现单元测试类和方法。
 
-1. 打开`File->Settings...` 对话框
-2. 进入`Languages & Frameworks -> PHP`对话框, 设置`Interpreter`
-2. 进入`Languages & Frameworks -> PHP -> PHPUnit`对话框.
-3. 因为我们一般都是本地执行测试, 因此只需要设置 Local. 设置 "PHPUnit Library" 项, 勾选选择"Use Custom autoloader",
-   然后在"Path to script:" 定位到项目的自动加载文件`vendor/autoload.php`.
-
-这样,就基本设置就完成了.
-
-接下来, 然后在PHPStorm的文件名或这个文件的编辑区域上右键单击, 选择**Run IndexControllerTest**. 测试就会执行, 并打开Run
-bar显示执行过程和结果.
