@@ -11,6 +11,9 @@
 namespace WanRen\Think;
 
 use WanRen\Think\Response;
+use Think\Hook;
+use Think\Storage;
+use Think\Think;
 
 /**
  * ThinkPHP 控制器基类 抽象类
@@ -66,7 +69,7 @@ abstract class Controller {
      * @param string $charset 模板输出字符集
      * @param string $contentType 输出类型
      * @param string $prefix 模板缓存前缀
-     * @return mixed
+     * @return void
      */
     protected function show($content,$charset='',$contentType='',$prefix='') {
         $this->view->display('',$charset,$contentType,$content,$prefix);
@@ -89,17 +92,17 @@ abstract class Controller {
     /**
      *  创建静态页面
      * @access protected
-     * @htmlfile 生成的静态文件名称
-     * @htmlpath 生成的静态文件路径
+     * @$htmlFile 生成的静态文件名称
+     * @$htmlPath 生成的静态文件路径
      * @param string $templateFile 指定要调用的模板文件
      * 默认为空 由系统自动定位模板文件
      * @return string
      */
-    protected function buildHtml($htmlfile='',$htmlpath='',$templateFile='') {
-        $content    =   $this->fetch($templateFile);
-        $htmlpath   =   !empty($htmlpath)?$htmlpath:HTML_PATH;
-        $htmlfile   =   $htmlpath.$htmlfile.C('HTML_FILE_SUFFIX');
-        Storage::put($htmlfile,$content,'html');
+    protected function buildHtml($htmlFile='', $htmlPath='', $templateFile='') {
+        $content  =   $this->fetch($templateFile);
+        $htmlPath =   !empty($htmlPath)?$htmlPath:HTML_PATH;
+        $htmlFile =   $htmlPath.$htmlFile.C('HTML_FILE_SUFFIX');
+        Storage::put($htmlFile,$content,'html');
         return $content;
     }
 
@@ -159,7 +162,7 @@ abstract class Controller {
      * @access public
      * @param string $method 方法名
      * @param array $args 参数
-     * @return mixed
+     * @return void
      */
     public function __call($method,$args) {
         if( 0 === strcasecmp($method,ACTION_NAME.C('ACTION_SUFFIX'))) {
@@ -185,6 +188,7 @@ abstract class Controller {
      * @param string $jumpUrl 页面跳转地址
      * @param mixed $ajax 是否为Ajax方式 当数字时指定跳转时间
      * @return void
+     * @throws Response
      */
     protected function error($message='',$jumpUrl='',$ajax=false) {
         $this->dispatchJump($message,0,$jumpUrl,$ajax);
@@ -197,6 +201,7 @@ abstract class Controller {
      * @param string $jumpUrl 页面跳转地址
      * @param mixed $ajax 是否为Ajax方式 当数字时指定跳转时间
      * @return void
+     * @throws Response
      */
     protected function success($message='',$jumpUrl='',$ajax=false) {
         $this->dispatchJump($message,1,$jumpUrl,$ajax);
@@ -280,28 +285,42 @@ abstract class Controller {
             $data['url']    =   $jumpUrl;
             $this->ajaxReturn($data);
         }
-        if(is_int($ajax)) $this->assign('waitSecond',$ajax);
-        if(!empty($jumpUrl)) $this->assign('jumpUrl',$jumpUrl);
+        if(is_int($ajax)) {
+            $this->assign('waitSecond', $ajax);
+        }
+        if(!empty($jumpUrl)) {
+            $this->assign('jumpUrl', $jumpUrl);
+        }
         // 提示标题
         $this->assign('msgTitle',$status? L('_OPERATION_SUCCESS_') : L('_OPERATION_FAIL_'));
         //如果设置了关闭窗口，则提示完毕后自动关闭窗口
-        if($this->get('closeWin'))    $this->assign('jumpUrl','javascript:window.close();');
+        if($this->get('closeWin')) {
+            $this->assign('jumpUrl', 'javascript:window.close();');
+        }
         $this->assign('status',$status);   // 状态
         //保证输出不受静态缓存影响
         C('HTML_CACHE_ON',false);
         if($status) { //发送成功信息
             $this->assign('message',$message);// 提示信息
             // 成功操作后默认停留1秒
-            if(!isset($this->waitSecond))    $this->assign('waitSecond','1');
+            if(!isset($this->waitSecond)) {
+                $this->assign('waitSecond', '1');
+            }
             // 默认操作成功自动返回操作前页面
-            if(!isset($this->jumpUrl)) $this->assign("jumpUrl",$_SERVER["HTTP_REFERER"]);
+            if(!isset($this->jumpUrl)) {
+                $this->assign("jumpUrl", $_SERVER["HTTP_REFERER"]);
+            }
             $this->display(C('TMPL_ACTION_SUCCESS'));
         }else{
             $this->assign('error',$message);// 提示信息
             //发生错误时候默认停留3秒
-            if(!isset($this->waitSecond))    $this->assign('waitSecond','3');
+            if(!isset($this->waitSecond)) {
+                $this->assign('waitSecond', '3');
+            }
             // 默认发生错误的话自动返回上页
-            if(!isset($this->jumpUrl)) $this->assign('jumpUrl',"javascript:history.back(-1);");
+            if(!isset($this->jumpUrl)) {
+                $this->assign('jumpUrl', "javascript:history.back(-1);");
+            }
             // 中止执行  避免出错后继续执行
             if (C('phpunit')) {
                 $response = $this->fetch(C('TMPL_ACTION_ERROR'));

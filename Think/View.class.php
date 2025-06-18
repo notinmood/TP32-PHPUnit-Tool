@@ -10,6 +10,9 @@
 // +----------------------------------------------------------------------
 namespace WanRen\Think;
 
+use Think\Storage;
+use Think\Hook;
+
 /**
  * ThinkPHP 视图类
  */
@@ -66,7 +69,7 @@ class View {
      * @param string $contentType 输出类型
      * @param string $content 模板输出内容
      * @param string $prefix 模板缓存前缀
-     * @return mixed
+     * @return void
      */
     public function display($templateFile='',$charset='',$contentType='',$content='',$prefix='') {
         G('viewStartTime');
