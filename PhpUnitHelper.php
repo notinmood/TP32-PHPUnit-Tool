@@ -10,6 +10,7 @@
 namespace WanRen\Think;
 
 use Think\Storage;
+use Think\Hook;
 
 class PhpUnitHelper
 {
