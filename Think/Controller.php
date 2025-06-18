@@ -323,4 +323,4 @@ abstract class Controller {
     }
 }
 
-class_alias('Think\Controller','Think\Action');
+class_alias(Controller::class,'WanRen\Think\Action');

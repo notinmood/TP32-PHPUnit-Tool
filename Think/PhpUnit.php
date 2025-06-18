@@ -16,7 +16,7 @@ trait PhpUnit
     /** @var  Controller */
     protected static $controller;
 
-    static public function setController( $controller )
+    public static function setController($controller )
     {
         self::$controller=$controller;
     }
