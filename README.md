@@ -4,6 +4,13 @@
 - 本项目复刻于 [snowair/think-phpunit](https://github.com/snowair/think-phpunit), 做了部分修改。
 - 本项目提交到GitHub之后，会自动同步更新到packagist.org。
 
+# 环境要求
+
+- 要求TP3.2项目中，根目录下有TP的入口文件index.php和项目管理文件composer.json。
+- 要求TP3.2项目中，有子文件夹Application和ThinkPHP。
+- 要求PHP版本大于等于7.4。
+- 要求 PHPUnit 版本大于等于9.0。
+
 # 安装和配置
 
 在项目根目录下, 打开`composer.json`，添加以下内容:
@@ -45,7 +52,7 @@ $ composer dump-autoload
 
 think-phpunit的单元测试类遵循以下规则:
 
-1. 所有的测试类都要在 `setUpBeforeClass` 静态方法中创建出模拟app实例.
+1. 所有的测试类都要在静态方法 `setUpBeforeClass` 或者实例方法 `setUp` 中创建出模拟app实例.
 
 2. 如果测试的是控制器类，那么测试类要 `use \Think\Phpunit;`. 测试其他类不需要这条
 

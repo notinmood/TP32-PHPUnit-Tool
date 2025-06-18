@@ -2,7 +2,7 @@
 /**
  * @author Tim Sims <https://github.com/timsims>
  */
-namespace Think;
+namespace WanRen\Think;
 
 use Think\Model;
 

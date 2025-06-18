@@ -4,9 +4,9 @@
  * Date: 2015/9/10
  * Time: 11:10
  */
-namespace Think;
+namespace WanRen\Think;
 
-use Snowair\Think\Phpunit\Response;
+use WanRen\Think\Response;
 
 trait PhpUnit
 {

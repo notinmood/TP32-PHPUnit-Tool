@@ -7,7 +7,7 @@
  * Time: 16:56
  */
 
-namespace Think;
+namespace WanRen\Think;
 
 class PhpUnitHelper
 {

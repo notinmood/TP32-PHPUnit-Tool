@@ -8,9 +8,9 @@
 // +----------------------------------------------------------------------
 // | Author: liu21st <liu21st@gmail.com>
 // +----------------------------------------------------------------------
-namespace Think;
+namespace WanRen\Think;
 
-use Snowair\Think\Phpunit\Response;
+use WanRen\Think\Response;
 
 /**
  * ThinkPHP 控制器基类 抽象类
