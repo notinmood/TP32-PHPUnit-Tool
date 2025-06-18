@@ -2,7 +2,7 @@
 
 - 帮助ThinkPHP3.2项目实施phpunit单元测试。
 - 本项目复刻于 [snowair/think-phpunit](https://github.com/snowair/think-phpunit), 做了部分修改。
-- 本项目提交到GitHub之后，会自动同步更新到packagist.org。
+- 本项目提交到GitHub(注意不是Gitee)之后，会自动同步更新到packagist.org。
 
 # 环境要求
 
