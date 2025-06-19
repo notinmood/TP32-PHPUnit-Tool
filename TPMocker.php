@@ -12,7 +12,7 @@ namespace WanRen\Think;
 use Think\Storage;
 use Think\Hook;
 
-class PhpUnitHelper
+class TPMocker
 {
 
     protected static $_map = [];
@@ -38,7 +38,7 @@ class PhpUnitHelper
             $think_path = $const['THINK_PATH'];
         }
         if ($runtime_path === null) {
-            $runtime_path = $const['ROOT_PATH'] . '/Runtime-test';
+            $runtime_path = $const['ROOT_PATH'] . '/Runtime-UnitTest';
         }
 
         if (!file_exists($app_path)) {
@@ -73,7 +73,7 @@ class PhpUnitHelper
         $_SERVER['SERVER_PROTOCOL'] = 'HTTP/1.1';
         $_SERVER['HTTP_REFERER']    = '/';
 
-        $this->_defineConsts();
+        $this->defineConstContents();
     }
 
     public function guessPath()
@@ -141,7 +141,7 @@ class PhpUnitHelper
      * @param $name
      * @param $value
      */
-    public function defineConst($name, $value)
+    public function defineConstInfo($name, $value)
     {
         defined($name) or define($name, $value);
     }
@@ -149,10 +149,9 @@ class PhpUnitHelper
     /**
      * 批量定义常量
      * @param array $map
-     *
      * @return $this
      */
-    public function defineConsts(array $map)
+    public function defineConstInfos(array $map)
     {
         foreach ($map as $name => $value) {
             defined($name) or define($name, $value);
@@ -221,9 +220,8 @@ class PhpUnitHelper
     /**
      * 定义核心常量
      */
-    private function _defineConsts()
+    private function defineConstContents()
     {
-
         $GLOBALS['_beginTime'] = microtime(TRUE);
         // 记录内存初始使用
         defined('MEMORY_LIMIT_ON') or define('MEMORY_LIMIT_ON', function_exists('memory_get_usage'));
@@ -304,8 +302,10 @@ class PhpUnitHelper
 
     /**
      * 启动模拟应用
+     * @param $forceUseTestDb bool 是否强制使用测试数据库
+     * @return void
      */
-    public function start()
+    public function start($forceUseTestDb = false)
     {
         $className = __CLASS__;
         spl_autoload_register($className . '::autoload');
@@ -369,10 +369,14 @@ class PhpUnitHelper
         C('HTML_CACHE_ON', false);
         C('LIMIT_ROBOT_VISIT', false);
         C('LIMIT_PROXY_VISIT', false);
-        $this->run();
+        $this->run($forceUseTestDb);
     }
 
-    protected function run()
+    /**
+     * @param $forceUseTestDb bool 是否强制使用测试数据库
+     * @return void
+     */
+    protected function run($forceUseTestDb = false)
     {
         \Think\Hook::listen('app_init');
         $this->init();
@@ -398,10 +402,10 @@ class PhpUnitHelper
         $test_db_name = C('DB_NAME'); // 测试数据库的数据库名
         $test_db_host = C('DB_HOST'); // 应用使用的数据库名
 
-        //// 强制要求测试数据库和正式数据库不一致
-        //if (($db_name && $db_name === $test_db_name) && ($db_host && $db_host === $test_db_host)) {
-        //    throw new \Exception('请单独为测试环境设置数据库连接配置');
-        //}
+        // 强制要求测试数据库和正式数据库不一致
+        if ($forceUseTestDb && ($db_name && $db_name === $test_db_name) && ($db_host && $db_host === $test_db_host)) {
+            throw new \RuntimeException('请单独为测试环境设置数据库连接配置');
+        }
 
         if (empty($test_db_host)) {
             $test_db_host = $db_host;
@@ -538,7 +542,7 @@ class PhpUnitHelper
      * @param        $class
      * @param string $map
      */
-    static public function addMap($class, $map = '')
+    public static function addMap($class, $map = '')
     {
         if (is_array($class)) {
             self::$_map = array_merge(self::$_map, $class);
@@ -558,7 +562,7 @@ class PhpUnitHelper
         }
     }
 
-    static public function fatalError()
+    public static function fatalError()
     {
         if ($e = error_get_last()) {
             print_r($e);
@@ -613,7 +617,7 @@ class PhpUnitHelper
         };
     }
 
-    function getProjectRoot($vendorParent)
+    public function getProjectRoot($vendorParent)
     {
         $dir = dirname($vendorParent);
         if (file_exists($vendorParent . DS . 'composer.json')
@@ -623,7 +627,7 @@ class PhpUnitHelper
             || file_exists($vendorParent . DS . 'index.php')
         ) {
             return $vendorParent;
-        } elseif ($dir != $vendorParent && $dir != '.') {
+        } elseif ($dir !== $vendorParent && $dir != '.') {
             return $this->getProjectRoot($dir);
         } else {
             return false;

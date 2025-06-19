@@ -9,7 +9,7 @@
 // | Author: liu21st <liu21st@gmail.com>
 // +----------------------------------------------------------------------
 
-if (php_sapi_name() === 'cli') {
+if (PHP_SAPI === 'cli') {
     include_once __DIR__.DIRECTORY_SEPARATOR.'Think'.DIRECTORY_SEPARATOR.'Controller.php';
     include_once __DIR__.DIRECTORY_SEPARATOR.'Think'.DIRECTORY_SEPARATOR.'View.class.php';
     include_once __DIR__.DIRECTORY_SEPARATOR.'Think'.DIRECTORY_SEPARATOR.'PhpUnit.php';

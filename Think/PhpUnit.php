@@ -11,7 +11,7 @@ use WanRen\Think\Response;
 trait PhpUnit
 {
 
-    /** @var  PhpUnitHelper */
+    /** @var  TPMocker */
     protected static $app;
     /** @var  Controller */
     protected static $controller;

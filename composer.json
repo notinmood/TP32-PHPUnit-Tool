@@ -13,7 +13,7 @@
   ],
   "autoload": {
     "files":[
-      "PhpUnitHelper.php",
+      "TPMocker.php",
       "Response.php",
       "include.php"
     ]
